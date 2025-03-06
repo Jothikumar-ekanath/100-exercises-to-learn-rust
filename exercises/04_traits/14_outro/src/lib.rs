@@ -9,7 +9,7 @@
 //
 // Tests are located in the `tests` folder—pay attention to the visibility of your types and methods.
 
-#[derive(Debug, PartialEq)] // Gives the type the ability to be compared and printed
+#[derive(Debug, PartialEq,Clone,Copy)] // Gives the type the ability to be compared and printed
 pub struct SaturatingU16 {
 	value: u16,
 }
@@ -43,6 +43,16 @@ impl std::ops::Add<u16> for SaturatingU16 {
 		self.saturating_add(&SaturatingU16::new(other))
 	}
 }
+
+// adding SaturatingU16 to &SaturatingU16
+impl std::ops::Add<&SaturatingU16> for SaturatingU16 {
+	type Output = SaturatingU16;
+
+	fn add(self, other: &SaturatingU16) -> SaturatingU16 {
+		self.saturating_add(other)
+	}
+}
+
 // adding SaturatingU16 to &u16
 impl std::ops::Add<&u16> for SaturatingU16 {
 	type Output = SaturatingU16;
