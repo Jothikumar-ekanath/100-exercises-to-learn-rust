@@ -2,13 +2,34 @@
 //   We've changed the enum variants to be more specific, thus removing the need for storing
 //   a `String` field into each variant.
 //   You'll also have to add `thiserror` as a dependency in the `Cargo.toml` file.
+#![allow(unused)]
 
+use thiserror::Error;
+#[derive(Error, Debug)]
 enum TicketNewError {
+    #[error("Title cannot be empty")]
     TitleCannotBeEmpty,
+    #[error("Title cannot be longer than 50 bytes")]
     TitleTooLong,
+    #[error("Description cannot be empty")]
     DescriptionCannotBeEmpty,
+    #[error("Description cannot be longer than 500 bytes")]
     DescriptionTooLong,
 }
+
+//impl std::error::Error for TicketNewError{}
+
+// if we have to call a to_string on a type we need to implement this 
+// impl std::fmt::Display for TicketNewError {
+//     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
+//         match self {
+//             TicketNewError::TitleTooLong =>  write!(f, "{}", "Title cannot be longer than 50 bytes"),
+//             TicketNewError::TitleCannotBeEmpty => write!(f,"{}","Title cannot be empty"),
+//             TicketNewError::DescriptionCannotBeEmpty => write!(f,"{}","Description cannot be empty"),
+//             TicketNewError::DescriptionTooLong =>write!(f,"{}","Description cannot be longer than 500 bytes"),
+//         }
+//     }
+// }
 
 #[derive(Debug, PartialEq, Clone)]
 struct Ticket {

@@ -1,11 +1,44 @@
 // TODO: Implement `TryFrom<String>` and `TryFrom<&str>` for `Status`.
 //  The parsing should be case-insensitive.
-
+#![allow(unused)]
 #[derive(Debug, PartialEq, Clone)]
 enum Status {
     ToDo,
     InProgress,
     Done,
+}
+#[derive(thiserror::Error, Debug,PartialEq)]
+#[error("{invalid_string} not a valid Status string")] // This provides a to_string() implementation
+struct ParseError{
+    invalid_string: String,
+}
+impl ParseError {
+    fn new(invalid_string: String) -> Self {
+        Self { invalid_string }
+    }
+}
+
+impl TryFrom<String> for Status {
+    type Error = ParseError;
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        match value.to_lowercase().as_str() {
+            "todo" => Ok(Status::ToDo),
+            "inprogress" => Ok(Status::InProgress),
+            "done" => Ok(Status::Done),
+            _ => Err(ParseError::new(value)),
+        }
+    }
+}
+impl TryFrom<&str> for Status {
+    type Error = String;
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value.to_lowercase().as_str() {
+            "todo" => Ok(Status::ToDo),
+            "inprogress" => Ok(Status::InProgress),
+            "done" => Ok(Status::Done),
+            _ => Err(format!("Invalid status: {}", value)),
+        }
+    }
 }
 
 #[cfg(test)]
@@ -23,6 +56,9 @@ mod tests {
 
         let status = Status::try_from("Done".to_string()).unwrap();
         assert_eq!(status, Status::Done);
+
+        let err = Status::try_from("WHAT".to_string()).unwrap_err();
+        assert_eq!(err.to_string(),"WHAT not a valid Status string".to_string());
     }
 
     #[test]
